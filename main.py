@@ -1,6 +1,5 @@
 from flask import Flask, request, redirect, render_template
-import cgi
-import os
+import re
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -23,24 +22,24 @@ def validate_login():
     verify_error = ''
     email_error = ''
 
-    if username == '':
+    if not username:
         username_error = 'Please enter a username'
-    elif len(username) < 3 or len(username) > 20 or ' ' in username:
+    elif re.search('\s', username) or not re.search('\S{4,20}', username):
         username_error = 'Please enter a valid username (Must be between 3 and 20 characters with no spaces)'
 
-    if password == '':
+    if not password:
         password_error = 'Please enter a password'
-    elif len(password) < 3 or len(password) > 20 or ' ' in password:
+    elif re.search('\s', password) or not re.search('\S{4,20}', password):
         password_error = 'Please enter a valid password (Must be between 3 and 20 characters with no spaces'
 
-    if verify == '':
+    if not verify:
         verify_error = 'Please verify your password'
     elif verify != password:
         verify_error = 'Your passwords do not match'
 
-    if email == '':
+    if not email:
         email_error = ''
-    elif '@' not in email or '.' not in email or ' ' in email or len(email) < 3 or len(email) > 20:
+    elif re.search('[@.]', email) or re.search('\s', email) or not re.search('\S{4,20}', email):
         email_error = 'Please enter a valid email (Must contain a "." and a "@", be between 3 and 20 characters long and have no spaces)'
 
     if not username_error and not password_error and not verify_error and not email_error:
